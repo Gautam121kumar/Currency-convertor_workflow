@@ -1,0 +1,170 @@
+{
+  "name": "currency-convertor_workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    message: `${$input.first().json.base_code} ${($input.first().json.conversion_result / $input.first().json.conversion_rate).toFixed(2)} = ${$input.first().json.conversion_result.toFixed(2)} ${$input.first().json.target_code}\nConversion Rate: ${$input.first().json.conversion_rate}`\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        912,
+        32
+      ],
+      "id": "bb1a5936-16bc-44a9-ae2a-64c6078c486c",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "73c3c673-e21a-4b50-9458-9b8a3ddd78f4",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        208,
+        32
+      ],
+      "id": "5a75bea5-cc27-4ddf-8888-85c5d9f5a603",
+      "name": "Webhook",
+      "webhookId": "73c3c673-e21a-4b50-9458-9b8a3ddd78f4"
+    },
+    {
+      "parameters": {
+        "content": "# Webhook Node: Receives the form submission from the browser.\n# This triggers the workflow with the input data: amount, from_currency, to_currency.\n# Response mode: Using Respond to Webhook Node (final response sent from last node).\n",
+        "width": 288,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        96,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "1be48161-ebb5-45a6-8a99-db7eccb2c27f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# HTTP Request Node: Calls the currency conversion API.\n# Takes the input from the Webhook Node (amount, from_currency, to_currency) and fetches the conversion result.\n\n",
+        "width": 288,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        432,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "36995c7c-d6eb-4ecc-8bb4-4fc215a25a45",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Code Node: Formats the conversion API response into a user-friendly message.\n# Returns JSON in the format: { \"message\": \"100 INR = 1.23 USD\" }\n# This output will be sent back to the browser.\n",
+        "width": 304,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        768,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "2e8de501-9c99-4808-bea9-631d0df6b08f",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# Respond to Webhook Node: Sends the formatted conversion result back to the user/browser.\n# Respond With: First Incoming Item or All Incoming Items depending on your preference.\n# This ensures the browser receives the result as JSON or text immediately.\n",
+        "width": 272,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1088,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "7fab90e1-10c5-4f46-8edc-7cc3945f698c",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1168,
+        32
+      ],
+      "id": "7592f921-ac92-4947-b670-f15970c9fc72",
+      "name": "Respond result to the Browser"
+    },
+    {
+      "parameters": {
+        "url": "=https://v6.exchangerate-api.com/v6/3c41da9d29995571986ffb38/pair/{{ $json.body.from }}/{{ $json.body.to }}/{{ $json.body.amount }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        560,
+        32
+      ],
+      "id": "90689245-657e-4099-998d-2e789090fca3",
+      "name": "Make api request to the currency api"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Respond result to the Browser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Make api request to the currency api",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Make api request to the currency api": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b0d8d0db-a633-4e95-b851-7bae2d5b4e02",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b83f0232f8595e883d7576a2d4891f89dcb70a68b08fe62c447e7db966bfcfe9"
+  },
+  "id": "HiuhtX1h0OlZE4Fp",
+  "tags": []
+}
